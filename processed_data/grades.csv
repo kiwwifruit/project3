@@ -1,31 +1,31 @@
 Name,Percentage_Score
-S1_Midterm 1,0.78
-S2_Midterm 1,0.82
-S3_Midterm 1,0.77
-S4_Midterm 1,0.75
-S5_Midterm 1,0.67
-S6_Midterm 1,0.71
-S7_Midterm 1,0.64
-S8_Midterm 1,0.92
-S9_Midterm 1,0.8
-S10_Midterm 1,0.89
-S1_Midterm 2,0.82
-S2_Midterm 2,0.85
-S3_Midterm 2,0.9
-S4_Midterm 2,0.77
-S5_Midterm 2,0.77
-S6_Midterm 2,0.64
-S7_Midterm 2,0.33
-S8_Midterm 2,0.88
-S9_Midterm 2,0.39
-S10_Midterm 2,0.64
 S1_Final,0.91
+S1_Midterm 1,0.78
+S1_Midterm 2,0.82
 S2_Final,0.9
+S2_Midterm 1,0.82
+S2_Midterm 2,0.85
 S3_Final,0.94
+S3_Midterm 1,0.77
+S3_Midterm 2,0.9
 S4_Final,0.745
+S4_Midterm 1,0.75
+S4_Midterm 2,0.77
 S5_Final,0.785
+S5_Midterm 1,0.67
+S5_Midterm 2,0.77
 S6_Final,0.875
+S6_Midterm 1,0.71
+S6_Midterm 2,0.64
 S7_Final,0.55
+S7_Midterm 1,0.64
+S7_Midterm 2,0.33
 S8_Final,0.92
+S8_Midterm 1,0.92
+S8_Midterm 2,0.88
 S9_Final,0.63
+S9_Midterm 1,0.8
+S9_Midterm 2,0.39
 S10_Final,0.58
+S10_Midterm 1,0.89
+S10_Midterm 2,0.64
