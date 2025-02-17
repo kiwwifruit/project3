@@ -5,105 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Score Prediction</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-        .slider-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .chart-container {
-            margin-top: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Student Score Prediction</h1>
-    <div id="controls"></div>
-    <h2>Predicted Score: <span id="score">0</span></h2>
-    <div id="chart" class="chart-container"></div>
+    <h1>Do Stress Patterns During Exams Reveal Hidden Insights About Performance?</h1>
+    <h2>Parallel Coordinates Plot</h2>
+    <div id="sliders">
+        <!-- First Row: Labels -->
+        <div id="slider-labels">
+            <label>ACC(std)</label>
+            <label>EDA(std)</label>
+            <label>HR(std)</label>
+            <label>TEMP(std)</label>
+        </div>
+    
+        <!-- Second Row: Sliders -->
+        <div id="slider-controls">
+            <input type="range" id="slider1" min="-3" max="3" step="0.1" value="0">
+            <input type="range" id="slider2" min="-3" max="3" step="0.1" value="0">
+            <input type="range" id="slider3" min="-3" max="3" step="0.1" value="0">
+            <input type="range" id="slider4" min="-3" max="3" step="0.1" value="0">
+        </div>
+    
+        <!-- Third Row: Slider Values -->
+        <div id="slider-values">
+            <span id="value1">0</span>
+            <span id="value2">0</span>
+            <span id="value3">0</span>
+            <span id="value4">0</span>
+        </div>
+    </div>
+    <!-- SVG Container -->
+    <div id="chart-container">
+        <svg width="1000" height="600"></svg>
+    </div>
 
-    <script>
-        const features = {
-            hr: { value: 50, enabled: true },
-            eda: { value: 50, enabled: true },
-            acc: { value: 50, enabled: true },
-            temp: { value: 50, enabled: true },
-        };
-
-        function calculateScore() {
-            return (
-                (features.hr.enabled ? features.hr.value * 0.3 : 0) +
-                (features.eda.enabled ? features.eda.value * 0.2 : 0) +
-                (features.acc.enabled ? features.acc.value * 0.25 : 0) +
-                (features.temp.enabled ? features.temp.value * 0.25 : 0)
-            );
-        }
-
-        function updateChart() {
-            d3.select("#chart").selectAll("*").remove();
-            const svg = d3.select("#chart").append("svg")
-                .attr("width", 600)
-                .attr("height", 300);
-
-            svg.append("line")
-                .attr("x1", 0)
-                .attr("y1", 150)
-                .attr("x2", 600)
-                .attr("y2", 150)
-                .attr("stroke", "black")
-                .attr("stroke-width", 2);
-
-            svg.append("circle")
-                .attr("cx", calculateScore() * 5)
-                .attr("cy", 150)
-                .attr("r", 10)
-                .style("fill", "blue");
-
-            document.getElementById("score").textContent = calculateScore().toFixed(2);
-        }
-
-        function createControls() {
-            const controls = document.getElementById("controls");
-            Object.keys(features).forEach(key => {
-                const container = document.createElement("div");
-                container.classList.add("slider-container");
-
-                const label = document.createElement("label");
-                label.innerHTML = key.toUpperCase();
-                container.appendChild(label);
-
-                const slider = document.createElement("input");
-                slider.type = "range";
-                slider.min = 0;
-                slider.max = 100;
-                slider.value = features[key].value;
-                slider.oninput = function () {
-                    features[key].value = this.value;
-                    updateChart();
-                };
-                container.appendChild(slider);
-
-                const checkbox = document.createElement("input");
-                checkbox.type = "checkbox";
-                checkbox.checked = features[key].enabled;
-                checkbox.onchange = function () {
-                    features[key].enabled = this.checked;
-                    updateChart();
-                };
-                container.appendChild(checkbox);
-
-                controls.appendChild(container);
-            });
-
-            updateChart();
-        }
-
-        createControls();
-    </script>
+    <!-- Load the JavaScript file -->
+    <script src="parallel_coordinates.js"></script>
 </body>
 </html>
