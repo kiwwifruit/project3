@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     const margin = { top: 50, right: 50, bottom: 50, left: 50 },
-          width = 900 - margin.left - margin.right,
-          height = 500 - margin.top - margin.bottom;
+          width = 1100 - margin.left - margin.right,
+          height = 600 - margin.top - margin.bottom;
     
     const sliderIds = ["slider1", "slider2", "slider3", "slider4"];
     const valueIds = ["value1", "value2", "value3", "value4"];
@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Color scale
         const colorScale = d3.scaleOrdinal()
                             .domain(["High", "Medium", "Low", "Very Low"])
-                            .range(["#d63d25", "#FADADD", "#ADD8E6", "#3186d5"]);
+                            .range(["#d45050", "#FADADD", "#ADD8E6", "#3186d5"]);
         // Legend position
         // Create the legend container on the left
         const legend = svg.append("g")

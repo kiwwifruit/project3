@@ -95,3 +95,86 @@ body {
     width: 100%;
     flex-direction: column; /* Stack elements vertically */
 }
+/* Scoped Pair Graph Styling */
+.pair-graph-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+/* Container for each individual chart */
+.pair-graph {
+    width: 48%;
+    text-align: center;
+}
+
+/* Graph Titles (S6 - Grade: 0.90) */
+.pair-graph-title {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* X & Y Axis Labels */
+.pair-graph-container .axis-label {
+    font-size: 16px;
+    font-weight: bold;
+    fill: black;
+}
+
+/* X & Y Axis Ticks */
+.pair-graph-container .axis text {
+    font-size: 14px;
+    fill: #333;
+}
+
+/* X & Y Axis Lines */
+.pair-graph-container .axis path, 
+.pair-graph-container .axis line {
+    stroke: black;
+    stroke-width: 1.5;
+}
+
+/* Line Graph Styling */
+.pair-graph-container .data-line {
+    fill: none;
+    stroke: #3186d5;
+    stroke-width: 2.5;
+}
+
+/* Dashed Average Line */
+.pair-graph-container .avg-line {
+    stroke: #d63d25;
+    stroke-width: 3;
+    stroke-dasharray: 6,3;
+    cursor: pointer;
+}
+
+/* Average Label */
+.pair-graph-container .avg-label {
+    fill: #d63d25;
+    font-size: 18px;
+    font-weight: bold;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+.pair-graph-container .avg-line:hover + .avg-label {
+    opacity: 1;
+}
+
+.tooltip-box {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgb(203, 190, 190);
+    color: #d63d25;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 6px 10px;
+    border-radius: 6px;
+    pointer-events: none; /* Ensures it does not interfere with cursor */
+    opacity: 0; /* Hidden by default */
+    transition: opacity 0.2s ease-in-out;
+}
+
