@@ -3,31 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Score Prediction</title>
+    <title>Student Score and Physiological Feature Visualization</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <h1>Compare Features Across Students</h1>
+    <label for="featureSelect">Select Feature:</label>
+    <select id="featureSelect">
+        <option value="hr">Heart Rate (HR)</option>
+        <option value="temp">Temperature (TEMP)</option>
+        <option value="eda">Electrodermal Activity (EDA)</option>
+        <option value="acc">Accelerometer (ACC)</option>
+    </select>
+
+    <!-- Dynamic charts container -->
+    <div id="chartsContainer" style="display: flex; justify-content: space-around; flex-wrap: wrap;"></div>
+
+    <br><br>
+
     <h1>Do Stress Patterns During Exams Reveal Hidden Insights About Performance?</h1>
     <h2>Parallel Coordinates Plot</h2>
     <div id="sliders">
-        <!-- First Row: Labels -->
         <div id="slider-labels">
             <label>ACC(std)</label>
             <label>EDA(std)</label>
             <label>HR(std)</label>
             <label>TEMP(std)</label>
         </div>
-    
-        <!-- Second Row: Sliders -->
         <div id="slider-controls">
             <input type="range" id="slider1" min="-3" max="3" step="0.1" value="0">
             <input type="range" id="slider2" min="-3" max="3" step="0.1" value="0">
             <input type="range" id="slider3" min="-3" max="3" step="0.1" value="0">
             <input type="range" id="slider4" min="-3" max="3" step="0.1" value="0">
         </div>
-    
-        <!-- Third Row: Slider Values -->
         <div id="slider-values">
             <span id="value1">0</span>
             <span id="value2">0</span>
@@ -35,12 +45,12 @@
             <span id="value4">0</span>
         </div>
     </div>
-    <!-- SVG Container -->
     <div id="chart-container">
         <svg width="1000" height="600"></svg>
     </div>
 
-    <!-- Load the JavaScript file -->
+    <!-- Load the JavaScript files -->
+    <script src="compare_plots.js"></script>
     <script src="parallel_coordinates.js"></script>
 </body>
 </html>
