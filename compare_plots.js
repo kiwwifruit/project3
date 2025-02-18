@@ -44,7 +44,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 .transition()
                 .duration(750)
                 .text(`${chartData.label} - Grade: ${chartData.grade}`);
-    
+            
+            
+            // **Update the X-axis Label Dynamically**
+            svg.select(".x-axis-label")
+                .transition()
+                .duration(750)
+                .text("Minutes");
+
+            // **Update the Y-axis Label Dynamically**
+            svg.select(".y-axis-label")
+                .transition()
+                .duration(750)
+                .text("Value");
             // **Update the y-axis scale**
             const yAxis = d3.axisLeft(yScale).tickValues(d3.ticks(chartData.alignedMinY, chartData.alignedMaxY, 7));
             svg.select(".y-axis")
@@ -165,7 +177,7 @@ document.addEventListener('DOMContentLoaded', function () {
         chartDataSets.forEach((chartData, index) => {
             const container = document.createElement('div');
             container.className = "pair-graph";
-            container.innerHTML = `<h2 class="pair-graph-title">${chartData.label} - Grade: ${chartData.grade}</h2>`; // Title with correct class
+            container.innerHTML = `<h2 class="pair-graph-title">${chartData.label} - Grade: ${chartData.grade}</h2>`;
             pairContainer.appendChild(container);
     
             const svgWidth = 550, svgHeight = 300, margin = { top: 40, right: 40, bottom: 60, left: 60 };
@@ -194,6 +206,23 @@ document.addEventListener('DOMContentLoaded', function () {
                 .attr("class", "y-axis axis")
                 .call(yAxis);
     
+            // **X-Axis Label (Ensures it can be updated)**
+            svg.append("text")
+                .attr("x", width / 2)
+                .attr("y", height + 45)
+                .attr("text-anchor", "middle")
+                .attr("class", "x-axis-label axis-label")
+                .text("Minutes");
+    
+            // **Y-Axis Label (Ensures it can be updated)**
+            svg.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("x", -height / 2)
+                .attr("y", -50)
+                .attr("text-anchor", "middle")
+                .attr("class", "y-axis-label axis-label")
+                .text("Value");
+    
             const line = d3.line()
                 .defined(d => d !== null)
                 .x((_, i) => xScale(i))
@@ -214,9 +243,9 @@ document.addEventListener('DOMContentLoaded', function () {
     
             svg.append("rect")
                 .attr("x", 0)
-                .attr("y", yScale(chartData.average) - 5)
+                .attr("y", yScale(chartData.average) - 15)
                 .attr("width", width)
-                .attr("height", 10)
+                .attr("height", 30)
                 .attr("fill", "transparent")
                 .attr("class", "avg-hover-area")
                 .style("cursor", "pointer")
