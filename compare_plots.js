@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
         switch (feature) {
             case 'hr': return ['hr/hr_S7_Midterm2.csv', 'hr/hr_S5_Midterm2.csv'];
             case 'temp': return ['temp/temp_S7_Final.csv', 'temp/temp_S8_Final.csv'];
-            case 'eda': return ['eda/eda_S1_Final.csv', 'eda/eda_S4_Final.csv'];
+            case 'eda': return ['eda/eda_S3_Final.csv', 'eda/eda_S4_Final.csv'];
             case 'acc': return ['acc/acc_S7_Midterm2.csv', 'acc/acc_S3_Midterm2.csv'];
             default: return [];
         }
