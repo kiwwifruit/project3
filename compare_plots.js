@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
         updateCharts(this.value);
     });
 
-    updateCharts('hr'); // Initialize with 'hr'
+    updateCharts('acc'); // Initialize with 'hr'
 
     function updateCharts(feature) {
         const filePaths = getFilePathsForFeature(feature);
@@ -29,49 +29,52 @@ document.addEventListener('DOMContentLoaded', function () {
     function updateGraphData(chartDataSets) {
         const pairContainer = d3.select(".pair-graph-container");
     
-        chartDataSets.forEach((chartData, index) => {
-            const container = pairContainer.selectAll(".pair-graph").nodes()[index];
-            const svg = d3.select(container).select("svg g");
+        pairContainer.selectAll(".pair-graph").each(function (_, index) {
+            const container = d3.select(this);
+            const svg = container.select("svg g");
+    
+            if (!chartDataSets[index]) return; // Prevent errors if missing data
     
             const width = 550 - 60 - 40;
             const height = 300 - 40 - 60;
     
             const xScale = d3.scaleLinear().domain([0, 180]).range([0, width]);
-            const yScale = d3.scaleLinear().domain([chartData.alignedMinY, chartData.alignedMaxY]).range([height, 0]);
+            const yScale = d3.scaleLinear()
+                .domain([chartDataSets[index].alignedMinY, chartDataSets[index].alignedMaxY])
+                .range([height, 0]);
     
             // **Update the Title Dynamically**
-            d3.select(container).select(".pair-graph-title")
+            container.select(".pair-graph-title")
                 .transition()
                 .duration(750)
-                .text(`${chartData.label} - Grade: ${chartData.grade}`);
-            
-            
-            // **Update the X-axis Label Dynamically**
+                .text(`${chartDataSets[index].label} - Grade: ${chartDataSets[index].grade}`);
+    
+            // **Update Axis Labels**
             svg.select(".x-axis-label")
                 .transition()
                 .duration(750)
                 .text("Minutes");
-
-            // **Update the Y-axis Label Dynamically**
+    
             svg.select(".y-axis-label")
                 .transition()
                 .duration(750)
                 .text("Value");
-            // **Update the y-axis scale**
-            const yAxis = d3.axisLeft(yScale).tickValues(d3.ticks(chartData.alignedMinY, chartData.alignedMaxY, 7));
+    
+            // **Update the y-axis**
+            const yAxis = d3.axisLeft(yScale).tickValues(d3.ticks(chartDataSets[index].alignedMinY, chartDataSets[index].alignedMaxY, 7));
             svg.select(".y-axis")
                 .transition()
                 .duration(750)
                 .call(yAxis);
     
-            // **Update the x-axis scale**
+            // **Update the x-axis**
             const xAxis = d3.axisBottom(xScale).tickValues(d3.range(0, 181, 20));
             svg.select(".x-axis")
                 .transition()
                 .duration(750)
                 .call(xAxis);
     
-            // **Update the data line with a transition**
+            // **Update the data line**
             const line = d3.line()
                 .defined(d => d !== null)
                 .x((_, i) => xScale(i))
@@ -79,25 +82,51 @@ document.addEventListener('DOMContentLoaded', function () {
                 .curve(d3.curveMonotoneX);
     
             svg.select(".data-line")
-                .datum(chartData.data)
+                .datum(chartDataSets[index].data)
                 .transition()
                 .duration(750)
                 .attr("d", line);
     
-            // **Update the average line with a transition**
+            // **Update the average line**
             svg.select(".avg-line")
                 .transition()
                 .duration(750)
-                .attr("y1", yScale(chartData.average))
-                .attr("y2", yScale(chartData.average));
+                .attr("y1", yScale(chartDataSets[index].average))
+                .attr("y2", yScale(chartDataSets[index].average));
     
-            // **Update the tooltip hover area**
-            svg.select(".avg-hover-area")
-                .transition()
-                .duration(750)
-                .attr("y", yScale(chartData.average) - 5);
+            // **Ensure each graph has its own tooltip**
+            d3.select(`.tooltip-box-${index}`).remove(); // Remove previous tooltip
+            const tooltip = d3.select("body")
+                .append("div")
+                .attr("class", `tooltip-box tooltip-box-${index}`)
+                .style("opacity", 0);
+    
+            // **Update the tooltip and hover area**
+            svg.selectAll(".avg-hover-area").remove(); // Remove old hover area
+            svg.append("rect")
+                .attr("x", 0)
+                .attr("y", yScale(chartDataSets[index].average) - 10) // Adjusted for better detection
+                .attr("width", width)
+                .attr("height", 20) // Increased size for better hovering
+                .attr("fill", "transparent")
+                .attr("class", "avg-hover-area")
+                .style("cursor", "pointer")
+                .on("mouseover", function (event) {
+                    d3.select(`.tooltip-box-${index}`)
+                        .style("opacity", 1)
+                        .html(`Avg: ${chartDataSets[index].average}`);
+                })
+                .on("mousemove", function (event) {
+                    d3.select(`.tooltip-box-${index}`)
+                        .style("left", (event.pageX + 10) + "px")
+                        .style("top", (event.pageY - 20) + "px");
+                })
+                .on("mouseout", function () {
+                    d3.select(`.tooltip-box-${index}`).style("opacity", 0);
+                });
         });
     }
+    
     function getFilePathsForFeature(feature) {
         switch (feature) {
             case 'hr': return ['hr/hr_S7_Midterm2.csv', 'hr/hr_S5_Midterm2.csv'];
@@ -170,10 +199,6 @@ document.addEventListener('DOMContentLoaded', function () {
         pairContainer.className = "pair-graph-container";
         chartsContainer.appendChild(pairContainer);
     
-        const tooltip = d3.select("body")
-            .append("div")
-            .attr("class", "tooltip-box");
-    
         chartDataSets.forEach((chartData, index) => {
             const container = document.createElement('div');
             container.className = "pair-graph";
@@ -206,7 +231,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 .attr("class", "y-axis axis")
                 .call(yAxis);
     
-            // **X-Axis Label (Ensures it can be updated)**
             svg.append("text")
                 .attr("x", width / 2)
                 .attr("y", height + 45)
@@ -214,7 +238,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 .attr("class", "x-axis-label axis-label")
                 .text("Minutes");
     
-            // **Y-Axis Label (Ensures it can be updated)**
             svg.append("text")
                 .attr("transform", "rotate(-90)")
                 .attr("x", -height / 2)
@@ -241,23 +264,29 @@ document.addEventListener('DOMContentLoaded', function () {
                 .attr("y2", yScale(chartData.average))
                 .attr("class", "avg-line");
     
+            d3.select(`.tooltip-box-${index}`).remove();
+            const tooltip = d3.select("body")
+                .append("div")
+                .attr("class", `tooltip-box tooltip-box-${index}`)
+                .style("opacity", 0);
+    
             svg.append("rect")
                 .attr("x", 0)
-                .attr("y", yScale(chartData.average) - 15)
+                .attr("y", yScale(chartData.average) - 10)
                 .attr("width", width)
-                .attr("height", 30)
+                .attr("height", 20)
                 .attr("fill", "transparent")
                 .attr("class", "avg-hover-area")
                 .style("cursor", "pointer")
-                .on("mouseover", function(event) {
+                .on("mouseover", function (event) {
                     tooltip.style("opacity", 1)
                         .html(`Avg: ${chartData.average}`);
                 })
-                .on("mousemove", function(event) {
+                .on("mousemove", function (event) {
                     tooltip.style("left", (event.pageX + 10) + "px")
-                           .style("top", (event.pageY - 20) + "px");
+                        .style("top", (event.pageY - 20) + "px");
                 })
-                .on("mouseout", function() {
+                .on("mouseout", function () {
                     tooltip.style("opacity", 0);
                 });
         });
