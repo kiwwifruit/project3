@@ -214,6 +214,7 @@ body {
     font-size: 18px;
     font-weight: bold;
     color: #5e5d5d;
+    margin-top: 15px;
 }
 
 /* Style the select dropdown */
@@ -234,6 +235,7 @@ body {
     background-repeat: no-repeat;
     background-position: right 15px center;
     background-size: 16px;
+    margin-top: 15px;
 }
 
 /* Hover effect */
@@ -281,7 +283,7 @@ body {
 /* Header Container */
 #header-container {
     text-align: center;
-    max-width: 900px; /* Restricts width for better readability */
+    max-width: 1000px; /* Restricts width for better readability */
     margin: 40px auto; /* Centers the text with top/bottom spacing */
 }
 
