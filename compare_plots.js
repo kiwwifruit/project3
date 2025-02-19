@@ -21,23 +21,57 @@ document.addEventListener('DOMContentLoaded', function () {
             if (d3.select(".pair-graph-container").empty()) {
                 renderCharts(chartDataSets, feature);
             } else {
-                updateGraphData(chartDataSets);
+                updateGraphData(chartDataSets, feature);
             }
         });
     }
-
-    function updateGraphData(chartDataSets) {
+    function getDescriptionForFeature(feature) {
+        switch (feature) {
+            case 'hr':
+                return "* Heart rate (HR) indicates both physical stress and cognitive engagement. \
+                S7 exhibits frequent heart rate spikes throughout the exam, suggesting difficulty managing \
+                stress. In contrast, S5 maintains a generally elevated yet stable heart rate, suggesting \
+                sustained cognitive effort and focus.\
+                <br><br> * Higher heart rates, when consistent rather than erratic, are associated with improved \
+                concentration and better exam performance. Rapid and unpredictable fluctuations may indicate \
+                stress-related distraction and hinder cognitive performance.";
+            case 'temp':
+                return "* Skin temperature (TEMP) changes can indicate stress-related physiological responses, \
+                such as blood vessel constriction. S7 shows significant fluctuations with lower baseline \
+                temperatures, suggesting stress responses at various stages of the exam or disengagement. \
+                In contrast, S8 maintains a stable, slightly elevated temperature throughout the exam, \
+                indicating calmness and sustained focus. \
+                <br><br> * Consistent body temperature suggests better stress management and a higher potential for good performance.";
+            case 'eda':
+                return "* Electrodermal Activity (EDA) measures skin electrical conductance as a quantitative indicator of how much you sweat, \
+                serving as a direct measurement of emotional stress. S2 shows a brief spike at the beginning—likely \
+                due to initial nervousness—followed by a calm, stable pattern. In contrast, S4 experiences high, \
+                sustained EDA early on, reflecting ongoing stress. \
+                <br><br> * Higher grades are associated with quick recovery from initial anxiety. \
+                Students who manage to calm down shortly after starting the exam generally perform better.";
+            case 'acc':
+                return "* The accelerometer records acceleration (ACC) as a measurement of body movement, which can \
+                reflect cognitive engagement or attempts to manage stress. S3 shows elevated movement levels \
+                throughout the exam, especially during the early stages, suggesting active thinking and \
+                problem-solving. In contrast, S7 maintains low movement for most of the exam, possibly indicating \
+                passivity. However, there is a notable spike near the end, which may represent growing discomfort, \
+                rushed attempts to complete remaining questions, or late-stage stress. \
+                <br><br> * Higher movement values appear to correlate with better performance, potentially reflecting cognitive effort. However, constant fidgeting or sudden movement spikes can be signs of stress-related distraction, potentially leading to lower scores.";
+        }
+    }
+    function updateGraphData(chartDataSets, feature) {
         const pairContainer = d3.select(".pair-graph-container");
     
         pairContainer.selectAll(".pair-graph").each(function (_, index) {
             const container = d3.select(this);
             const svg = container.select("svg g");
-    
+            
             if (!chartDataSets[index]) return; // Prevent errors if missing data
     
             const width = 550 - 60 - 40;
             const height = 300 - 40 - 60;
-    
+            
+            
             const xScale = d3.scaleLinear().domain([0, 180]).range([0, width]);
             const yScale = d3.scaleLinear()
                 .domain([chartDataSets[index].alignedMinY, chartDataSets[index].alignedMaxY])
@@ -45,9 +79,7 @@ document.addEventListener('DOMContentLoaded', function () {
     
             // **Update the Title Dynamically**
             container.select(".pair-graph-title")
-                .transition()
-                .duration(750)
-                .text(`${chartDataSets[index].label} - Grade: ${chartDataSets[index].grade}`);
+                .html(chartDataSets[index].label);
     
             // **Update Axis Labels**
             svg.select(".x-axis-label")
@@ -58,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
             svg.select(".y-axis-label")
                 .transition()
                 .duration(750)
-                .text("Value");
+                .text(chartDataSets[index].yLabel);
     
             // **Update the y-axis**
             const yAxis = d3.axisLeft(yScale).tickValues(d3.ticks(chartDataSets[index].alignedMinY, chartDataSets[index].alignedMaxY, 7));
@@ -125,6 +157,17 @@ document.addEventListener('DOMContentLoaded', function () {
                     d3.select(`.tooltip-box-${index}`).style("opacity", 0);
                 });
         });
+        d3.select(".graph-pair-description")
+                .transition()
+                .duration(500)
+                .style("opacity", 0) // Fade out
+                .on("end", function() {
+                    d3.select(this)
+                        .html(getDescriptionForFeature(feature))
+                        .transition()
+                        .duration(500)
+                        .style("opacity", 1); // Fade in with new text
+                });
     }
     
     function getFilePathsForFeature(feature) {
@@ -141,6 +184,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const rows = csvData.split('\n'); // Get all rows
         const labels = Array.from({ length: 181 }, (_, i) => i);
         const data = new Array(181).fill(null);
+        const headers = rows[0].split(',');  // Extract column headers
+
+        // Extract the Y-axis label (real column name)
+        const yLabel = headers[1].trim(); // Assuming the second column is the Y-axis data
     
         // Extract the grade from the third column (assuming it's on the first row)
         const gradeRow = rows[1].split(','); 
@@ -165,7 +212,8 @@ document.addEventListener('DOMContentLoaded', function () {
         return {
             labels,
             data,
-            label: filename.match(/S\d+/)?.[0],  // Extract "S6" from filename
+            label: `${filename.match(/S\d+/)?.[0]} - ${yLabel} vs. Minutes - Grade: ${grade}`,
+            yLabel,  // Extract "S6" from filename
             grade,  // Store extracted grade
             average: average.toFixed(2),
             minY: Math.min(...validData),
@@ -202,10 +250,17 @@ document.addEventListener('DOMContentLoaded', function () {
         chartDataSets.forEach((chartData, index) => {
             const container = document.createElement('div');
             container.className = "pair-graph";
-            container.innerHTML = `<h2 class="pair-graph-title">${chartData.label} - Grade: ${chartData.grade}</h2>`;
+            container.innerHTML = `
+            <h2 class="pair-graph-title">${chartData.label}</h2>
+            <div class="legend">
+                <svg width="20" height="10">
+                    <line x1="0" y1="5" x2="20" y2="5" stroke="#d63d25" stroke-width="3.5" stroke-dasharray="5,3"></line>
+                </svg>
+                <span>Average Value</span>
+            </div>`;
             pairContainer.appendChild(container);
     
-            const svgWidth = 550, svgHeight = 300, margin = { top: 40, right: 40, bottom: 60, left: 60 };
+            const svgWidth = 550, svgHeight = 300, margin = { top: 40, right: 40, bottom: 60, left: 70 };
             const width = svgWidth - margin.left - margin.right;
             const height = svgHeight - margin.top - margin.bottom;
     
@@ -244,7 +299,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 .attr("y", -50)
                 .attr("text-anchor", "middle")
                 .attr("class", "y-axis-label axis-label")
-                .text("Value");
+                .text(chartDataSets[index].yLabel);
     
             const line = d3.line()
                 .defined(d => d !== null)
@@ -272,9 +327,9 @@ document.addEventListener('DOMContentLoaded', function () {
     
             svg.append("rect")
                 .attr("x", 0)
-                .attr("y", yScale(chartData.average) - 10)
+                .attr("y", yScale(chartData.average) - 15)
                 .attr("width", width)
-                .attr("height", 20)
+                .attr("height", 30)
                 .attr("fill", "transparent")
                 .attr("class", "avg-hover-area")
                 .style("cursor", "pointer")
@@ -290,5 +345,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     tooltip.style("opacity", 0);
                 });
         });
+        const descriptionBox = document.createElement('p');
+        descriptionBox.className = "graph-pair-description";
+        descriptionBox.innerHTML = getDescriptionForFeature(feature);
+        pairContainer.appendChild(descriptionBox);
     }
 });

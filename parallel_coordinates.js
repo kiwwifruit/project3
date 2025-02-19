@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
     
     const svg = d3.select("svg")
     .attr("width", width + margin.left + margin.right + 10) 
-    .attr("height", height + margin.top + margin.bottom + 100) 
+    .attr("height", height + margin.top + margin.bottom + 60) 
     .append("g")
     .attr("transform", `translate(${margin.left},${margin.top})`);
 
@@ -132,9 +132,11 @@ document.addEventListener("DOMContentLoaded", function () {
             featureValues[i] = parseFloat(document.getElementById(sliderIds[i]).value) || 0;
             document.getElementById(valueIds[i]).textContent = featureValues[i];
             predictedGrade += featureValues[i] * coefficients[i];
-            predictedGrade = Math.max(-3, Math.min(3, predictedGrade));
             }
-            
+            predictedGrade = Math.max(-3, Math.min(3, predictedGrade));
+
+            let scaledPredictedGrade = (predictedGrade * scaleFactors["Predicted Grade(%)"]) + addFactors["Predicted Grade(%)"];
+            document.getElementById("predicted-score").textContent = scaledPredictedGrade.toFixed(2);
 
         let newLineData = {};
         dimensions.forEach((dim, i) => {
@@ -154,10 +156,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     .duration(300)
                     .attr("d", path);
         }
-        // Add event listeners for sliders
-        sliderIds.forEach(id => {
-        document.getElementById(id).addEventListener("input", updatePrediction);});
-
         const scaleFactors = { 
             "ACC(g)": 0.14270464592483886, 
             "EDA(μS)": 0.2103479494358205, 
@@ -172,7 +170,13 @@ document.addEventListener("DOMContentLoaded", function () {
             "HR(bpm)": 97.57604506172838, 
             "TEMP(°C)": 29.48904200617284,
             "Predicted Grade(%)": 75.25000000000001
-        };  // Addition factors
+        };
+
+        // Add event listeners for sliders
+        sliderIds.forEach(id => {
+        document.getElementById(id).addEventListener("input", updatePrediction);});
+
+        // Addition factors
         // Draw axes
         svg.selectAll(".axis")
            .data(dimensions)
